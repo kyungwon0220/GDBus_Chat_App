@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+  <interface name="App.ChatMessenger.interface.Message">
+  <!-- Methods -->
+    <method name="SendMsg">
+      <arg name="message" type="s" direction="in"/>
+    </method>
+    <method name="NotifyTyping">
+      <!-- 인자 없음 -->
+    </method>
+    <!-- Signals -->
+    <signal name="NewMsgReceived">
+      <arg name="user_name" type="s"/>
+      <arg name="message" type="s"/>
+    </signal>
+    <signal name="UserTyping">
+      <arg name="user_name" type="s"/>
+    </signal>
+  </interface>
+</node>
