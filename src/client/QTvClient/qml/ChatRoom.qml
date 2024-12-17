@@ -50,11 +50,17 @@ Window {
                 typingIndicator.text = userName + " is typing...";
                 typingTimer.restart(); // 타이머를 재시작하여 2초 후에 문구를 비움
             }
+
+            function onUserStoppedTypingSignal(userName) {
+                console.log(userName + " is Stopped typing");
+                typingTimer.stop();
+                typingIndicator.text = "";
+            }
     }
 
     Timer {
         id: typingTimer
-        interval: 2000 // 2초 후에 실행
+        interval: 5000 // 5초 후에 실행
         repeat: false
         onTriggered: {
             typingIndicator.text = ""; // 문구를 비움
@@ -124,6 +130,8 @@ Window {
                 onTextChanged: {
                     if (messageInput.text.length > 0) {
                         messageAPI.notifyTyping(); // 서버에 입력 중임을 알림
+                    } else {
+                        messageAPI.userStopTyping();
                     }
                 }
             }
@@ -135,7 +143,6 @@ Window {
                     if (messageInput.text.length > 0) {
                         messageAPI.sendMessage(messageInput.text); // 서버에 메시지 전송 요청
                         messageInput.text = "";
-                        typingIndicator.text = ""; // 메시지를 보낸 후 입력 상태 표시 초기화
                     }
                 }
             }
