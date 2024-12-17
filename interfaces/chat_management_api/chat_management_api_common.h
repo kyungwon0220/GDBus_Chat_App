@@ -53,7 +53,7 @@ public:
         return Glib::VariantContainerBase::create_tuple(params);
     }
 
-    static Glib::VariantContainerBase JoinChat_pack(
+    static Glib::VariantContainerBase GetUserList_pack(
         const Glib::ustring & arg_chat_title) {
         Glib::VariantContainerBase base;
         Glib::Variant<Glib::ustring> params =
@@ -61,7 +61,7 @@ public:
         return Glib::VariantContainerBase::create_tuple(params);
     }
 
-    static Glib::VariantContainerBase GetUserList_pack(
+    static Glib::VariantContainerBase JoinChat_pack(
         const Glib::ustring & arg_chat_title) {
         Glib::VariantContainerBase base;
         Glib::Variant<Glib::ustring> params =
