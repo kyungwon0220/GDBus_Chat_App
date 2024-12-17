@@ -4,24 +4,25 @@ static const char interfaceXml0[] = R"XML_DELIMITER(<?xml version="1.0" encoding
     <!-- Methods -->
     <method name="RegisterUser">
       <arg name="user_name" type="s" direction="in"/>
-    </method>
-    <method name="GetChatList">      
       <arg name="chat_list" type="as" direction="out"/> <!-- 반환값: 채팅방 목록 -->
     </method>
     <method name="CreateChat">
       <arg name="chat_title" type="s" direction="in"/>
-      <arg name="chat_title" type="s" direction="out"/> <!-- 반환값: 생성된 채팅방의 제목 // 생성자의 즉시 입장을 위해-->
-    </method>
-    <method name="JoinChat">
-      <arg name="chat_title" type="s" direction="in"/>
-    </method>
-    <method name="LeaveChat">
-      <!-- 인자 없음 -->
+      <arg name="chat_title" type="s" direction="out"/> <!-- 반환값: 생성된 채팅방의 제목 -->
     </method>
     <method name="GetUserList">
       <arg name="chat_title" type="s" direction="in"/>
+      <arg name="chat_title" type="s" direction="out"/>
       <arg name="user_list" type="as" direction="out"/> <!-- 반환값: 수신받은 chat_title 채팅방에, 접속중인 클라이언트 목록 -->
     </method>
+    <method name="JoinChat">
+      <arg name="chat_title" type="s" direction="in"/>
+      <arg name="user_list" type="as" direction="out"/> <!-- 반환값: 입장 처리한 채팅방에, 접속중인 클라이언트 목록 -->
+    </method>
+    <method name="LeaveChat">
+      <arg name="chat_list" type="as" direction="out"/> <!-- 반환값: 채팅방 목록 -->
+    </method>
+    
     <!-- Signals -->
     <signal name="ChatListUpdated">
       <arg name="chat_list" type="as"/>
@@ -31,7 +32,7 @@ static const char interfaceXml0[] = R"XML_DELIMITER(<?xml version="1.0" encoding
       <arg name="chat_title" type="s"/> <!-- 접속한 채팅방명 -->
     </signal>
     <signal name="UserLeft">
-      <arg name="user_name" type="s"/>  <!-- 퇴장한 사클라이언트 대화명(닉네임) -->
+      <arg name="user_name" type="s"/>  <!-- 퇴장한 클라이언트 대화명(닉네임) -->
       <arg name="chat_title" type="s"/> <!-- 퇴장한 채팅방명 -->
     </signal>
   </interface>
@@ -145,12 +146,6 @@ void App::ChatMessenger::interface::ManagementStub::on_method_call(
             methodInvocation);
     }
 
-    if (method_name.compare("GetChatList") == 0) {
-        MethodInvocation methodInvocation(invocation);
-        GetChatList(
-            methodInvocation);
-    }
-
     if (method_name.compare("CreateChat") == 0) {
         Glib::Variant<Glib::ustring> base_chat_title;
         parameters.get_child(base_chat_title, 0);
@@ -158,6 +153,17 @@ void App::ChatMessenger::interface::ManagementStub::on_method_call(
 
         MethodInvocation methodInvocation(invocation);
         CreateChat(
+            (p_chat_title),
+            methodInvocation);
+    }
+
+    if (method_name.compare("GetUserList") == 0) {
+        Glib::Variant<Glib::ustring> base_chat_title;
+        parameters.get_child(base_chat_title, 0);
+        Glib::ustring p_chat_title = specialGetter(base_chat_title);
+
+        MethodInvocation methodInvocation(invocation);
+        GetUserList(
             (p_chat_title),
             methodInvocation);
     }
@@ -176,17 +182,6 @@ void App::ChatMessenger::interface::ManagementStub::on_method_call(
     if (method_name.compare("LeaveChat") == 0) {
         MethodInvocation methodInvocation(invocation);
         LeaveChat(
-            methodInvocation);
-    }
-
-    if (method_name.compare("GetUserList") == 0) {
-        Glib::Variant<Glib::ustring> base_chat_title;
-        parameters.get_child(base_chat_title, 0);
-        Glib::ustring p_chat_title = specialGetter(base_chat_title);
-
-        MethodInvocation methodInvocation(invocation);
-        GetUserList(
-            (p_chat_title),
             methodInvocation);
     }
 

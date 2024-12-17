@@ -16,6 +16,8 @@ include_directories(
 # 서버 소스 파일
 set(SOURCES
     server.cpp
+    chat_management_api_stub.cpp
+    msg_api_stub.cpp
     ../../interfaces/chat_management_api/chat_management_api_stub.cpp
     ../../interfaces/msg_api/msg_api_stub.cpp
 )

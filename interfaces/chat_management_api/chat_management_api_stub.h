@@ -33,18 +33,16 @@ protected:
     virtual void RegisterUser(
         const Glib::ustring & user_name,
         MethodInvocation &invocation) = 0;
-    virtual void GetChatList(
-        MethodInvocation &invocation) = 0;
     virtual void CreateChat(
+        const Glib::ustring & chat_title,
+        MethodInvocation &invocation) = 0;
+    virtual void GetUserList(
         const Glib::ustring & chat_title,
         MethodInvocation &invocation) = 0;
     virtual void JoinChat(
         const Glib::ustring & chat_title,
         MethodInvocation &invocation) = 0;
     virtual void LeaveChat(
-        MethodInvocation &invocation) = 0;
-    virtual void GetUserList(
-        const Glib::ustring & chat_title,
         MethodInvocation &invocation) = 0;
 
     void ChatListUpdated_emitter(const std::vector<Glib::ustring> &destination_bus_names, const std::vector<Glib::ustring> &);
@@ -113,12 +111,6 @@ public:
         m_message->return_error(domain, code, message);
     }
 
-    void ret() {
-        std::vector<Glib::VariantBase> vlist;
-
-        m_message->return_value(Glib::Variant<Glib::VariantBase>::create_tuple(vlist));
-    }
-
     void ret(const std::vector<Glib::ustring> & p0) {
         std::vector<Glib::VariantBase> vlist;
         Glib::Variant<std::vector<Glib::ustring>> var0 =
@@ -133,6 +125,18 @@ public:
         Glib::Variant<Glib::ustring> var0 =
             Glib::Variant<Glib::ustring>::create(p0);
         vlist.push_back(var0);
+
+        m_message->return_value(Glib::Variant<Glib::VariantBase>::create_tuple(vlist));
+    }
+
+    void ret(const Glib::ustring & p0, const std::vector<Glib::ustring> & p1) {
+        std::vector<Glib::VariantBase> vlist;
+        Glib::Variant<Glib::ustring> var0 =
+            Glib::Variant<Glib::ustring>::create(p0);
+        vlist.push_back(var0);
+        Glib::Variant<std::vector<Glib::ustring>> var1 =
+            Glib::Variant<std::vector<Glib::ustring>>::create(p1);
+        vlist.push_back(var1);
 
         m_message->return_value(Glib::Variant<Glib::VariantBase>::create_tuple(vlist));
     }
