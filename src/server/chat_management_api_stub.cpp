@@ -21,10 +21,8 @@ void ManagementStub::RegisterUser(const Glib::ustring &input_user_name, MethodIn
     } std::cout << "==========" << std::endl << std::endl << std::endl;
     // ~ 서버 Log 출력
 
-    invocation.ret();
+    invocation.ret(serverData.chat_list);
 }
-
-void ManagementStub::GetChatList(MethodInvocation &invocation) {}
 
 void ManagementStub::GetUserList(const Glib::ustring &chat_title, MethodInvocation &invocation) {
     std::vector<Glib::ustring> user_list;
@@ -61,7 +59,7 @@ void ManagementStub::CreateChat(const Glib::ustring &chat_title, MethodInvocatio
         std::cout << "==========" << std::endl << std::endl << std::endl;
         // ~ 서버 Log 출력
     
-        invocation.ret(chat_title);
+        invocation.ret(chat_title, serverData.chat_list);
 }
 
 void ManagementStub::JoinChat(const Glib::ustring &chat_title, MethodInvocation &invocation) {
@@ -143,5 +141,5 @@ void ManagementStub::LeaveChat(MethodInvocation &invocation) {
         return;
     }
 
-    invocation.ret();
+    invocation.ret(serverData.chat_list);
 }
