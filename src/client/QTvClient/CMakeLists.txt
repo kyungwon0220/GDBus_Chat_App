@@ -6,7 +6,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 6.2 REQUIRED COMPONENTS Quick)
-# find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLIBMM REQUIRED glibmm-2.4 giomm-2.4)
 
 
@@ -26,6 +25,8 @@ qt_add_qml_module(appQTvClient
         QML_FILES qml/UserList.qml
         SOURCES src/header/chat_management_api.h
         SOURCES src/implementation/chat_management_api.cpp
+        SOURCES src/header/msg_management_api.h
+        SOURCES src/implementation/msg_management_api.cpp
         SOURCES src/header/window_manager.hpp
 )
 
