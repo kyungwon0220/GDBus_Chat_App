@@ -93,6 +93,38 @@ App::ChatMessenger::interface::MessageProxy::NotifyTyping_sync(
 }
 
 /**
+ * 인자 없음
+ */
+void App::ChatMessenger::interface::MessageProxy::UserStopTyping(
+    const Gio::SlotAsyncReady &callback,
+    const Glib::RefPtr<Gio::Cancellable> &cancellable,
+    int timeout_msec)
+{
+    Glib::VariantContainerBase base;
+
+    m_proxy->call("UserStopTyping", callback, cancellable, base, timeout_msec);
+}
+
+void App::ChatMessenger::interface::MessageProxy::UserStopTyping_finish(
+    const Glib::RefPtr<Gio::AsyncResult> &result)
+{
+    Glib::VariantContainerBase wrapped;
+    wrapped = m_proxy->call_finish(result);
+}
+
+void
+App::ChatMessenger::interface::MessageProxy::UserStopTyping_sync(
+    const Glib::RefPtr<Gio::Cancellable> &cancellable,
+    int timeout_msec)
+{
+    Glib::VariantContainerBase base;
+
+    Glib::VariantContainerBase wrapped;
+    wrapped = m_proxy->call_sync("UserStopTyping", cancellable, base, timeout_msec);
+
+}
+
+/**
  * Signals
  */
 
@@ -126,6 +158,15 @@ void App::ChatMessenger::interface::MessageProxy::handle_signal(const Glib::ustr
         p_user_name = base_user_name.get();
 
         UserTyping_signal.emit((p_user_name));
+    }
+    if (signal_name == "UserStoppedTyping") {
+        if (parameters.get_n_children() != 1) return;
+        Glib::Variant<Glib::ustring> base_user_name;
+        parameters.get_child(base_user_name, 0);
+        Glib::ustring p_user_name;
+        p_user_name = base_user_name.get();
+
+        UserStoppedTyping_signal.emit((p_user_name));
     }
 }
 

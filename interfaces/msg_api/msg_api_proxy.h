@@ -57,8 +57,22 @@ public:
 const Glib::RefPtr<Gio::Cancellable> &cancellable = {},
         int timeout_msec = -1);
 
+    void UserStopTyping(
+        const Gio::SlotAsyncReady &slot,
+        const Glib::RefPtr<Gio::Cancellable> &cancellable = {},
+        int timeout_msec = -1);
+
+    void UserStopTyping_finish (
+        const Glib::RefPtr<Gio::AsyncResult> &res);
+
+    void
+    UserStopTyping_sync(
+const Glib::RefPtr<Gio::Cancellable> &cancellable = {},
+        int timeout_msec = -1);
+
     sigc::signal<void, Glib::ustring, Glib::ustring > NewMsgReceived_signal;
     sigc::signal<void, Glib::ustring > UserTyping_signal;
+    sigc::signal<void, Glib::ustring > UserStoppedTyping_signal;
 
     void reference() const override {}
     void unreference() const override {}
