@@ -16,4 +16,5 @@ private:
     ServerData(const ServerData&) = delete;             // 복사 생성 금지
     ServerData& operator=(const ServerData&) = delete;  // 대입 금지
 };
+extern ServerData& serverData;
 #endif // SERVER_DATA

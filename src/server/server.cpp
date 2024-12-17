@@ -1,5 +1,7 @@
 #include "chat_management_api_stub.h"
 #include "msg_api_stub.h"
+#include "server_data.hpp"
+ServerData& serverData = ServerData::instance();
 
 int main(/*int argc, char *argv[]*/) {
     Gio::Application::create("App.ChatMessenger.Server");
