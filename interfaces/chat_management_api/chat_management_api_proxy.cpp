@@ -42,38 +42,6 @@ void App::ChatMessenger::interface::ManagementProxy::RegisterUser(
 }
 
 void App::ChatMessenger::interface::ManagementProxy::RegisterUser_finish(
-    const Glib::RefPtr<Gio::AsyncResult> &result)
-{
-    Glib::VariantContainerBase wrapped;
-    wrapped = m_proxy->call_finish(result);
-}
-
-void
-App::ChatMessenger::interface::ManagementProxy::RegisterUser_sync(
-    const Glib::ustring & arg_user_name,
-    const Glib::RefPtr<Gio::Cancellable> &cancellable,
-    int timeout_msec)
-{
-    Glib::VariantContainerBase base;
-    base = ManagementTypeWrap::RegisterUser_pack(
-        arg_user_name);
-
-    Glib::VariantContainerBase wrapped;
-    wrapped = m_proxy->call_sync("RegisterUser", cancellable, base, timeout_msec);
-
-}
-
-void App::ChatMessenger::interface::ManagementProxy::GetChatList(
-    const Gio::SlotAsyncReady &callback,
-    const Glib::RefPtr<Gio::Cancellable> &cancellable,
-    int timeout_msec)
-{
-    Glib::VariantContainerBase base;
-
-    m_proxy->call("GetChatList", callback, cancellable, base, timeout_msec);
-}
-
-void App::ChatMessenger::interface::ManagementProxy::GetChatList_finish(
     std::vector<Glib::ustring> &out_chat_list,
     const Glib::RefPtr<Gio::AsyncResult> &result)
 {
@@ -86,14 +54,17 @@ void App::ChatMessenger::interface::ManagementProxy::GetChatList_finish(
 }
 
 std::vector<Glib::ustring>
-App::ChatMessenger::interface::ManagementProxy::GetChatList_sync(
+App::ChatMessenger::interface::ManagementProxy::RegisterUser_sync(
+    const Glib::ustring & arg_user_name,
     const Glib::RefPtr<Gio::Cancellable> &cancellable,
     int timeout_msec)
 {
     Glib::VariantContainerBase base;
+    base = ManagementTypeWrap::RegisterUser_pack(
+        arg_user_name);
 
     Glib::VariantContainerBase wrapped;
-    wrapped = m_proxy->call_sync("GetChatList", cancellable, base, timeout_msec);
+    wrapped = m_proxy->call_sync("RegisterUser", cancellable, base, timeout_msec);
 
     std::vector<Glib::ustring> out_chat_list;
     Glib::Variant<std::vector<Glib::ustring>> out_chat_list_v;
@@ -120,6 +91,7 @@ void App::ChatMessenger::interface::ManagementProxy::CreateChat(
 
 void App::ChatMessenger::interface::ManagementProxy::CreateChat_finish(
     Glib::ustring &out_chat_title,
+    std::vector<Glib::ustring> &out_chat_list,
     const Glib::RefPtr<Gio::AsyncResult> &result)
 {
     Glib::VariantContainerBase wrapped;
@@ -128,9 +100,13 @@ void App::ChatMessenger::interface::ManagementProxy::CreateChat_finish(
     Glib::Variant<Glib::ustring> out_chat_title_v;
     wrapped.get_child(out_chat_title_v, 0);
     out_chat_title = out_chat_title_v.get();
+
+    Glib::Variant<std::vector<Glib::ustring>> out_chat_list_v;
+    wrapped.get_child(out_chat_list_v, 1);
+    out_chat_list = out_chat_list_v.get();
 }
 
-Glib::ustring
+std::tuple<Glib::ustring, std::vector<Glib::ustring>>
 App::ChatMessenger::interface::ManagementProxy::CreateChat_sync(
     const Glib::ustring & arg_chat_title,
     const Glib::RefPtr<Gio::Cancellable> &cancellable,
@@ -147,11 +123,20 @@ App::ChatMessenger::interface::ManagementProxy::CreateChat_sync(
     Glib::Variant<Glib::ustring> out_chat_title_v;
     wrapped.get_child(out_chat_title_v, 0);
     out_chat_title = out_chat_title_v.get();
-    return out_chat_title;
+
+    std::vector<Glib::ustring> out_chat_list;
+    Glib::Variant<std::vector<Glib::ustring>> out_chat_list_v;
+    wrapped.get_child(out_chat_list_v, 1);
+    out_chat_list = out_chat_list_v.get();
+
+    return std::make_tuple(
+        std::move(out_chat_title),
+        std::move(out_chat_list)
+    );
 }
 
 /**
- * 반환값: 생성된 채팅방의 제목 // 생성자의 즉시 입장을 위해
+ * 반환값: 채팅방 목록
  */
 void App::ChatMessenger::interface::ManagementProxy::JoinChat(
     const Glib::ustring & arg_chat_title,
@@ -199,13 +184,18 @@ void App::ChatMessenger::interface::ManagementProxy::LeaveChat(
 }
 
 void App::ChatMessenger::interface::ManagementProxy::LeaveChat_finish(
+    std::vector<Glib::ustring> &out_chat_list,
     const Glib::RefPtr<Gio::AsyncResult> &result)
 {
     Glib::VariantContainerBase wrapped;
     wrapped = m_proxy->call_finish(result);
+
+    Glib::Variant<std::vector<Glib::ustring>> out_chat_list_v;
+    wrapped.get_child(out_chat_list_v, 0);
+    out_chat_list = out_chat_list_v.get();
 }
 
-void
+std::vector<Glib::ustring>
 App::ChatMessenger::interface::ManagementProxy::LeaveChat_sync(
     const Glib::RefPtr<Gio::Cancellable> &cancellable,
     int timeout_msec)
@@ -215,10 +205,15 @@ App::ChatMessenger::interface::ManagementProxy::LeaveChat_sync(
     Glib::VariantContainerBase wrapped;
     wrapped = m_proxy->call_sync("LeaveChat", cancellable, base, timeout_msec);
 
+    std::vector<Glib::ustring> out_chat_list;
+    Glib::Variant<std::vector<Glib::ustring>> out_chat_list_v;
+    wrapped.get_child(out_chat_list_v, 0);
+    out_chat_list = out_chat_list_v.get();
+    return out_chat_list;
 }
 
 /**
- * 인자 없음
+ * 반환값: 채팅방 목록
  */
 void App::ChatMessenger::interface::ManagementProxy::GetUserList(
     const Glib::ustring & arg_chat_title,

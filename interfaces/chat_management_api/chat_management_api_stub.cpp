@@ -4,19 +4,18 @@ static const char interfaceXml0[] = R"XML_DELIMITER(<?xml version="1.0" encoding
     <!-- Methods -->
     <method name="RegisterUser">
       <arg name="user_name" type="s" direction="in"/>
-    </method>
-    <method name="GetChatList">      
       <arg name="chat_list" type="as" direction="out"/> <!-- 반환값: 채팅방 목록 -->
     </method>
     <method name="CreateChat">
       <arg name="chat_title" type="s" direction="in"/>
-      <arg name="chat_title" type="s" direction="out"/> <!-- 반환값: 생성된 채팅방의 제목 // 생성자의 즉시 입장을 위해-->
+      <arg name="chat_title" type="s" direction="out"/> <!-- 반환값: 생성된 채팅방의 제목 -->
+      <arg name="chat_list" type="as" direction="out"/> <!-- 반환값: 채팅방 목록 -->
     </method>
     <method name="JoinChat">
       <arg name="chat_title" type="s" direction="in"/>
     </method>
     <method name="LeaveChat">
-      <!-- 인자 없음 -->
+      <arg name="chat_list" type="as" direction="out"/> <!-- 반환값: 채팅방 목록 -->
     </method>
     <method name="GetUserList">
       <arg name="chat_title" type="s" direction="in"/>
@@ -31,7 +30,7 @@ static const char interfaceXml0[] = R"XML_DELIMITER(<?xml version="1.0" encoding
       <arg name="chat_title" type="s"/> <!-- 접속한 채팅방명 -->
     </signal>
     <signal name="UserLeft">
-      <arg name="user_name" type="s"/>  <!-- 퇴장한 사클라이언트 대화명(닉네임) -->
+      <arg name="user_name" type="s"/>  <!-- 퇴장한 클라이언트 대화명(닉네임) -->
       <arg name="chat_title" type="s"/> <!-- 퇴장한 채팅방명 -->
     </signal>
   </interface>
@@ -142,12 +141,6 @@ void App::ChatMessenger::interface::ManagementStub::on_method_call(
         MethodInvocation methodInvocation(invocation);
         RegisterUser(
             (p_user_name),
-            methodInvocation);
-    }
-
-    if (method_name.compare("GetChatList") == 0) {
-        MethodInvocation methodInvocation(invocation);
-        GetChatList(
             methodInvocation);
     }
 

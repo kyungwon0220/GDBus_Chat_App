@@ -37,25 +37,12 @@ public:
         int timeout_msec = -1);
 
     void RegisterUser_finish (
-        const Glib::RefPtr<Gio::AsyncResult> &res);
-
-    void
-    RegisterUser_sync(
-        const Glib::ustring & user_name,const Glib::RefPtr<Gio::Cancellable> &cancellable = {},
-        int timeout_msec = -1);
-
-    void GetChatList(
-        const Gio::SlotAsyncReady &slot,
-        const Glib::RefPtr<Gio::Cancellable> &cancellable = {},
-        int timeout_msec = -1);
-
-    void GetChatList_finish (
         std::vector<Glib::ustring> &chat_list,
         const Glib::RefPtr<Gio::AsyncResult> &res);
 
     std::vector<Glib::ustring>
-    GetChatList_sync(
-const Glib::RefPtr<Gio::Cancellable> &cancellable = {},
+    RegisterUser_sync(
+        const Glib::ustring & user_name,const Glib::RefPtr<Gio::Cancellable> &cancellable = {},
         int timeout_msec = -1);
 
     void CreateChat(
@@ -66,9 +53,10 @@ const Glib::RefPtr<Gio::Cancellable> &cancellable = {},
 
     void CreateChat_finish (
         Glib::ustring &chat_title,
+        std::vector<Glib::ustring> &chat_list,
         const Glib::RefPtr<Gio::AsyncResult> &res);
 
-    Glib::ustring
+    std::tuple<Glib::ustring, std::vector<Glib::ustring>>
     CreateChat_sync(
         const Glib::ustring & chat_title,const Glib::RefPtr<Gio::Cancellable> &cancellable = {},
         int timeout_msec = -1);
@@ -93,9 +81,10 @@ const Glib::RefPtr<Gio::Cancellable> &cancellable = {},
         int timeout_msec = -1);
 
     void LeaveChat_finish (
+        std::vector<Glib::ustring> &chat_list,
         const Glib::RefPtr<Gio::AsyncResult> &res);
 
-    void
+    std::vector<Glib::ustring>
     LeaveChat_sync(
 const Glib::RefPtr<Gio::Cancellable> &cancellable = {},
         int timeout_msec = -1);
