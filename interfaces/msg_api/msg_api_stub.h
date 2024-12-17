@@ -35,6 +35,8 @@ protected:
         MethodInvocation &invocation) = 0;
     virtual void NotifyTyping(
         MethodInvocation &invocation) = 0;
+    virtual void UserStopTyping(
+        MethodInvocation &invocation) = 0;
 
     void NewMsgReceived_emitter(const std::vector<Glib::ustring> &destination_bus_names, const Glib::ustring &, const Glib::ustring &);
     sigc::signal<void, const Glib::ustring &, const Glib::ustring &> NewMsgReceived_signal;
@@ -43,6 +45,10 @@ protected:
     void UserTyping_emitter(const std::vector<Glib::ustring> &destination_bus_names, const Glib::ustring &);
     sigc::signal<void, const Glib::ustring &> UserTyping_signal;
     sigc::signal<void, const std::vector<Glib::ustring>&, const Glib::ustring &> UserTyping_selectiveSignal;
+
+    void UserStoppedTyping_emitter(const std::vector<Glib::ustring> &destination_bus_names, const Glib::ustring &);
+    sigc::signal<void, const Glib::ustring &> UserStoppedTyping_signal;
+    sigc::signal<void, const std::vector<Glib::ustring>&, const Glib::ustring &> UserStoppedTyping_selectiveSignal;
 
     void on_method_call(const Glib::RefPtr<Gio::DBus::Connection> &connection,
                         const Glib::ustring &sender,

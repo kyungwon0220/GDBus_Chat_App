@@ -8,12 +8,18 @@ static const char interfaceXml0[] = R"XML_DELIMITER(<?xml version="1.0" encoding
     <method name="NotifyTyping">
       <!-- 인자 없음 -->
     </method>
+    <method name="UserStopTyping">
+      <!-- 인자 없음 -->
+    </method>
     <!-- Signals -->
     <signal name="NewMsgReceived">
       <arg name="user_name" type="s"/>
       <arg name="message" type="s"/>
     </signal>
     <signal name="UserTyping">
+      <arg name="user_name" type="s"/>
+    </signal>
+    <signal name="UserStoppedTyping">
       <arg name="user_name" type="s"/>
     </signal>
   </interface>
@@ -47,6 +53,9 @@ App::ChatMessenger::interface::MessageStub::MessageStub():
     UserTyping_signal.connect(sigc::bind<0>(sigc::mem_fun(this, &MessageStub::UserTyping_emitter),
             std::vector<Glib::ustring>({""})) );
     UserTyping_selectiveSignal.connect(sigc::mem_fun(this, &MessageStub::UserTyping_emitter));
+    UserStoppedTyping_signal.connect(sigc::bind<0>(sigc::mem_fun(this, &MessageStub::UserStoppedTyping_emitter),
+            std::vector<Glib::ustring>({""})) );
+    UserStoppedTyping_selectiveSignal.connect(sigc::mem_fun(this, &MessageStub::UserStoppedTyping_emitter));
 }
 
 App::ChatMessenger::interface::MessageStub::~MessageStub()
@@ -130,6 +139,12 @@ void App::ChatMessenger::interface::MessageStub::on_method_call(
             methodInvocation);
     }
 
+    if (method_name.compare("UserStopTyping") == 0) {
+        MethodInvocation methodInvocation(invocation);
+        UserStopTyping(
+            methodInvocation);
+    }
+
 }
 
 void App::ChatMessenger::interface::MessageStub::on_interface_get_property(
@@ -196,6 +211,27 @@ void App::ChatMessenger::interface::MessageStub::UserTyping_emitter(
                     obj.object_path,
                     "App.ChatMessenger.interface.Message",
                     "UserTyping",
+                    bus_name,
+                    params);
+        }
+    }
+}
+
+void App::ChatMessenger::interface::MessageStub::UserStoppedTyping_emitter(
+    const std::vector<Glib::ustring> &destination_bus_names,const Glib::ustring & user_name)
+{
+    std::vector<Glib::VariantBase> paramsList;
+
+    paramsList.push_back(Glib::Variant<Glib::ustring>::create((user_name)));;
+
+    const Glib::VariantContainerBase params =
+        Glib::Variant<std::vector<Glib::VariantBase>>::create_tuple(paramsList);
+    for (const RegisteredObject &obj: m_registered_objects) {
+        for (const auto &bus_name: destination_bus_names) {
+            obj.connection->emit_signal(
+                    obj.object_path,
+                    "App.ChatMessenger.interface.Message",
+                    "UserStoppedTyping",
                     bus_name,
                     params);
         }

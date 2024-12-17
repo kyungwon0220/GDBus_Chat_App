@@ -8,12 +8,18 @@
     <method name="NotifyTyping">
       <!-- 인자 없음 -->
     </method>
+    <method name="UserStopTyping">
+      <!-- 인자 없음 -->
+    </method>
     <!-- Signals -->
     <signal name="NewMsgReceived">
       <arg name="user_name" type="s"/>
       <arg name="message" type="s"/>
     </signal>
     <signal name="UserTyping">
+      <arg name="user_name" type="s"/>
+    </signal>
+    <signal name="UserStoppedTyping">
       <arg name="user_name" type="s"/>
     </signal>
   </interface>
