@@ -111,59 +111,61 @@ void ManagementStub::JoinChat(const Glib::ustring &chat_title, MethodInvocation 
 
 void ManagementStub::LeaveChat(MethodInvocation &invocation) {
     auto bus_name = invocation.getMessage()->get_sender();                      // 클라이언트의 버스 이름을 얻음
-    const auto &user_name = std::get<0>(serverData.user_map[bus_name]);         // 본 함수를 호출한 클라이언트의 대화명
-    const std::string chat_title = std::get<1>(serverData.user_map[bus_name]);  // 본 함수를 호출한 클라이언트가, 접속중인 채팅방명
-    std::vector<Glib::ustring> destinations;                                    // 같은 채팅방에 참여중인 클라이언트들을, 추출할 벡터 생성
-
-    
     if (serverData.user_map.find(bus_name) != serverData.user_map.end()) {
-        if (!chat_title.empty()) {
-            // 같은 채팅방에 접속중인 클라이언트들 추출 ~
-            for (const auto &entry : serverData.user_map) {
-                if ((std::get<1>(entry.second) == chat_title && entry.first != bus_name) || std::get<1>(entry.second) == "") {  // 본 함수를 호출한 본인은, 호출 대상에서 제외 // 아무 채팅방에도 접속중이지 않은 클라이언트들에게도 송출 ( UserList.qml 실시간 최신화 )
-                    destinations.push_back(Glib::ustring(entry.first));
-                }
-            }
-            // ~ 같은 채팅방에 접속중인 클라이언트들 추출            
-
-            std::get<1>(serverData.user_map[bus_name]) = "";                    // 클라이언트가 채팅방을 떠남 (채팅방 정보 초기화)
-            std::cout << "' " << std::get<0>(serverData.user_map[bus_name]) << " ' 클라이언트가 ' " << chat_title << " ' 채팅방 퇴장." << std::endl;   // 서버 Log 출력
-
-            // 퇴장하는 채팅방에, 접속중인 클라이언트의 존재 여부 확인 ~
-            bool hasOtherClients = false;
-            for (const auto &entry : serverData.user_map) {
-                if (std::get<1>(entry.second) == chat_title) {
-                    hasOtherClients = true;
-                    break;
-                }
-            }
-            // ~ 퇴장하는 채팅방에, 접속중인 클라이언트의 존재 여부 확인
-
-            if (!hasOtherClients) {                                             // 접속중인 클라이언트가 없을 경우
-                serverData.chat_list.erase(std::remove(serverData.chat_list.begin(), serverData.chat_list.end(), Glib::ustring(chat_title)), serverData.chat_list.end());
-
-                                                        // 서버 Log 출력 ~
-                                                        std::cout << "No users remaining in chat ' " << chat_title << " '. Chat room has been deleted." << std::endl;
-                                                        std::cout << "========== 현존하는 채팅방 목록 ==========" << std::endl;
-                                                        for (const auto &chat : serverData.chat_list) { std::cout << chat << std::endl; }
-                                                        std::cout << "==========" << std::endl << std::endl << std::endl;
-                                                        // ~ 서버 Log 출력
-
-                std::vector<Glib::ustring> empty_destinations = {""};
-                this->ChatListUpdated_emitter(empty_destinations, serverData.chat_list);
-            }
-            this->UserLeft_emitter(destinations, user_name, Glib::ustring(chat_title));
-                                                    // destinations Debug ~
-                                                    std::cout << "Sending 'UserLeft' signal to the following destinations:" << std::endl;
-                                                    for (const auto &destination : destinations) {
-                                                        std::cout << "  Destination: " << destination << std::endl;
-                                                    }
-                                                    // ~ destinations Debug
-        }
+        LeaveChat_impl(bus_name);
+        invocation.ret(serverData.chat_list);
     } else {
         invocation.getMessage()->return_dbus_error("App.ChatMessenger.Error", "User not registered");   // 클라이언트가 등록되지 않은 경우 오류 반환
         return;
     }
+}
 
-    invocation.ret(serverData.chat_list);
+void ManagementStub::LeaveChat_impl(const std::string &bus_name) {
+    const auto &user_name = std::get<0>(serverData.user_map[bus_name]);         // 본 함수를 호출한 클라이언트의 대화명
+    const std::string chat_title = std::get<1>(serverData.user_map[bus_name]);  // 본 함수를 호출한 클라이언트가, 접속중인 채팅방명
+    std::vector<Glib::ustring> destinations;                                    // 같은 채팅방에 참여중인 클라이언트들을, 추출할 벡터 생성
+
+    if (!chat_title.empty()) {
+        // 같은 채팅방에 접속중인 클라이언트들 추출 ~
+        for (const auto &entry : serverData.user_map) {
+            if ((std::get<1>(entry.second) == chat_title && entry.first != bus_name) || std::get<1>(entry.second) == "") {  // 본 함수를 호출한 본인은, 호출 대상에서 제외 // 아무 채팅방에도 접속중이지 않은 클라이언트들에게도 송출 ( UserList.qml 실시간 최신화 )
+                destinations.push_back(Glib::ustring(entry.first));
+            }
+        }
+        // ~ 같은 채팅방에 접속중인 클라이언트들 추출            
+
+        std::get<1>(serverData.user_map[bus_name]) = "";                    // 클라이언트가 채팅방을 떠남 (채팅방 정보 초기화)
+        std::cout << "' " << std::get<0>(serverData.user_map[bus_name]) << " ' 클라이언트가 ' " << chat_title << " ' 채팅방 퇴장." << std::endl;   // 서버 Log 출력
+
+        // 퇴장하는 채팅방에, 접속중인 클라이언트의 존재 여부 확인 ~
+        bool hasOtherClients = false;
+        for (const auto &entry : serverData.user_map) {
+            if (std::get<1>(entry.second) == chat_title) {
+                hasOtherClients = true;
+                break;
+            }
+        }
+        // ~ 퇴장하는 채팅방에, 접속중인 클라이언트의 존재 여부 확인
+
+        if (!hasOtherClients) {                                             // 접속중인 클라이언트가 없을 경우
+            serverData.chat_list.erase(std::remove(serverData.chat_list.begin(), serverData.chat_list.end(), Glib::ustring(chat_title)), serverData.chat_list.end());
+
+                                                    // 서버 Log 출력 ~
+                                                    std::cout << "No users remaining in chat ' " << chat_title << " '. Chat room has been deleted." << std::endl;
+                                                    std::cout << "========== 현존하는 채팅방 목록 ==========" << std::endl;
+                                                    for (const auto &chat : serverData.chat_list) { std::cout << chat << std::endl; }
+                                                    std::cout << "==========" << std::endl << std::endl << std::endl;
+                                                    // ~ 서버 Log 출력
+
+            std::vector<Glib::ustring> empty_destinations = {""};
+            this->ChatListUpdated_emitter(empty_destinations, serverData.chat_list);
+        }
+        this->UserLeft_emitter(destinations, user_name, Glib::ustring(chat_title));
+                                                // destinations Debug ~
+                                                std::cout << "Sending 'UserLeft' signal to the following destinations:" << std::endl;
+                                                for (const auto &destination : destinations) {
+                                                    std::cout << "  Destination: " << destination << std::endl;
+                                                }
+                                                // ~ destinations Debug
+    }
 }
