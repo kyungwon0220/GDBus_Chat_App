@@ -9,5 +9,6 @@ public:
     void CreateChat(const Glib::ustring &chat_title, MethodInvocation &invocation) override;
     void JoinChat(const Glib::ustring &chat_title, MethodInvocation &invocation) override;
     void LeaveChat(MethodInvocation &invocation) override;
+    void LeaveChat_impl(const std::string &bus_name); // invocation 없이 호출되는 상황을 위한 헬퍼 함수
 };
 #endif
