@@ -10,6 +10,27 @@ Window {
     property string chatTitle: ""                   // 전달받을 채팅방 제목
     property ListModel messageModel: ListModel {}   // 메시지 모델
 
+    onClosing: { // 창이 닫힐 때의 이벤트 처리
+        // UserList.qml 창이 열려 있다면 닫기 ~
+        if (windowManager.getGlobalUserListWindow() !== null) {
+            console.log("\tUserList.qml 프로그램 종료 버튼 클릭 ( UserList.qml 창 닫기 )");
+            var existingUserListWindow = windowManager.getGlobalUserListWindow();
+            existingUserListWindow.close(); // UserList.qml 창 닫기
+            existingUserListWindow.destroy();   // 메모리 정리
+            windowManager.setGlobalUserListWindow(null);    // 변수 초기화
+        }
+        // ~ UserList.qml 창이 열려 있다면 닫기
+        // ChatRoom.qml 창이 열려 있다면 닫기 ~
+        if (windowManager.getGlobalChatRoomWindow() !== null) {
+            console.log("\tUserList.qml 프로그램 종료 버튼 클릭 ( ChatRoom.qml 창 닫기 )");
+            var existingChatRoomWindow = windowManager.getGlobalChatRoomWindow();
+            existingChatRoomWindow.close(); // UserList.qml 창 닫기
+            existingChatRoomWindow.destroy();   // 메모리 정리
+            windowManager.setGlobalChatRoomWindow(null);    // 변수 초기화
+        }
+        // ~ ChatRoom.qml 창이 열려 있다면 닫기
+    }
+
     Connections {
         target: chatManagementAPI
 

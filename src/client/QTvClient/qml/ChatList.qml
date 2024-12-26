@@ -7,6 +7,18 @@ Window {
     title: qsTr("Chat List")
     property var chatListModel: []  // Main.qml에서 전달받을 채팅방 목록
     property string errMsg: ""      // 서버의 'CreateChat()' 실패 시, ERR Message
+    onClosing: {
+        // ChatList.qml 창이 열려 있다면 닫기 ~
+        if (windowManager.getGlobalChatListWindow() !== null) {
+            console.log("\tUserList.qml 프로그램 종료 버튼 클릭 ( ChatList.qml 창 닫기 )");
+            var existingWindow = windowManager.getGlobalChatListWindow();
+            existingWindow.close(); // UserList.qml 창 닫기
+            existingWindow.destroy();   // 메모리 정리
+            windowManager.setGlobalChatListWindow(null);    // 변수 초기화
+        }
+        // ~ ChatList.qml 창이 열려 있다면 닫기
+    }
+
     Connections {
         target: chatManagementAPI
         function onChatListUpdated(updatedChatList) {

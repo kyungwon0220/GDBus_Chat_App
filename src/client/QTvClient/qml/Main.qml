@@ -8,35 +8,36 @@ Window {
     visible: true
     title: qsTr("Hello Client")
     property string errMsg: ""  // 서버의 'RegisterUser()' 실패시, ERR Message
-        onClosing: { // 창이 닫힐 때의 이벤트 처리
-            // ChatList.qml 창이 열려 있다면 닫기 ~
-            if (windowManager.getGlobalChatListWindow() !== null) {
-                console.log("\tUserList.qml 프로그램 종료 버튼 클릭 ( ChatList.qml 창 닫기 )");
-                var existingWindow = windowManager.getGlobalChatListWindow();
-                existingWindow.close(); // UserList.qml 창 닫기
-                existingWindow.destroy();   // 메모리 정리
-                windowManager.setGlobalChatListWindow(null);    // 변수 초기화
-            }
-            // ~ ChatList.qml 창이 열려 있다면 닫기
-            // UserList.qml 창이 열려 있다면 닫기 ~
-            if (windowManager.getGlobalUserListWindow() !== null) {
-                console.log("\tUserList.qml 프로그램 종료 버튼 클릭 ( UserList.qml 창 닫기 )");
-                var existingUserListWindow = windowManager.getGlobalUserListWindow();
-                existingUserListWindow.close(); // UserList.qml 창 닫기
-                existingUserListWindow.destroy();   // 메모리 정리
-                windowManager.setGlobalUserListWindow(null);    // 변수 초기화
-            }
-            // ~ UserList.qml 창이 열려 있다면 닫기
-            // ChatRoom.qml 창이 열려 있다면 닫기 ~
-            if (windowManager.getGlobalChatRoomWindow() !== null) {
-                console.log("\tUserList.qml 프로그램 종료 버튼 클릭 ( ChatRoom.qml 창 닫기 )");
-                var existingChatRoomWindow = windowManager.getGlobalChatRoomWindow();
-                existingChatRoomWindow.close(); // UserList.qml 창 닫기
-                existingChatRoomWindow.destroy();   // 메모리 정리
-                windowManager.setGlobalChatRoomWindow(null);    // 변수 초기화
-            }
-            // ~ ChatRoom.qml 창이 열려 있다면 닫기
+    onClosing: { // 창이 닫힐 때의 이벤트 처리
+        // ChatList.qml 창이 열려 있다면 닫기 ~
+        if (windowManager.getGlobalChatListWindow() !== null) {
+            console.log("\t( ChatList.qml 창 닫기 )");
+            var existingWindow = windowManager.getGlobalChatListWindow();
+            existingWindow.close(); // UserList.qml 창 닫기
+            existingWindow.destroy();   // 메모리 정리
+            windowManager.setGlobalChatListWindow(null);    // 변수 초기화
         }
+        // ~ ChatList.qml 창이 열려 있다면 닫기
+        // UserList.qml 창이 열려 있다면 닫기 ~
+        if (windowManager.getGlobalUserListWindow() !== null) {
+            console.log("\t( UserList.qml 창 닫기 )");
+            var existingUserListWindow = windowManager.getGlobalUserListWindow();
+            existingUserListWindow.close(); // UserList.qml 창 닫기
+            existingUserListWindow.destroy();   // 메모리 정리
+            windowManager.setGlobalUserListWindow(null);    // 변수 초기화
+        }
+        // ~ UserList.qml 창이 열려 있다면 닫기
+        // ChatRoom.qml 창이 열려 있다면 닫기 ~
+        if (windowManager.getGlobalChatRoomWindow() !== null) {
+            console.log("\t( ChatRoom.qml 창 닫기 )");
+            var existingChatRoomWindow = windowManager.getGlobalChatRoomWindow();
+            existingChatRoomWindow.close(); // UserList.qml 창 닫기
+            existingChatRoomWindow.destroy();   // 메모리 정리
+            windowManager.setGlobalChatRoomWindow(null);    // 변수 초기화
+        }
+        // ~ ChatRoom.qml 창이 열려 있다면 닫기
+    }
+
     Connections {
         target: chatManagementAPI
         function onRegisterUserFinished(qmlChatList) { // onRegisterUserFinish() emit registerUserFinished(qmlChatList);
@@ -61,6 +62,7 @@ Window {
             registrationFailedDialog.open();            // Dialog 사용하여, 경고창 표시
         }
     }
+
     TextField { // TextField: 사용하고자 하는 대화명 입력 필드
         id: userNameInput
         width: parent.width * 0.8                           // 가로 사이즈
